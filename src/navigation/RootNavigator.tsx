@@ -23,7 +23,7 @@ export function RootNavigator() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
       {/* @ts-ignore - React Navigation 7 id prop TS strict issue, not a runtime error */}
       <Stack.Navigator
-        initialRouteName="Onboarding"
+        initialRouteName="MainTabs"
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.bg },

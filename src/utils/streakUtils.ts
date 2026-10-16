@@ -89,13 +89,18 @@ export const calculateConsistencyScore = (
   const last30 = Array.from({ length: 30 }, (_, i) =>
     formatDate(subDays(new Date(), 29 - i))
   );
+  // rate and recentRate are each in [0.0, 1.0]
   const rate = calculateCompletionRate(habit, logs, last30);
-  // Weight recent days more
+  // Weight recent 7 days more heavily
   const last7 = last30.slice(-7);
   const recentRate = calculateCompletionRate(habit, logs, last7);
+  // score = rate*60 + recentRate*40  →  range [0, 100]
+  // Do NOT multiply by 100 again — the inputs are already fractional rates.
   const score = rate * 60 + recentRate * 40;
-  return Math.round(score * 100);
+  // Math.min(100, ...) is a safety clamp only, not the primary logic
+  return Math.min(100, Math.round(score));
 };
+
 
 export const getDayStatuses = (
   habit: Habit,

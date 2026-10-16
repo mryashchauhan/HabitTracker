@@ -10,6 +10,8 @@ import { Habit, HabitLog, AppSettings } from '../types';
 
 import { StorageService } from '../utils/storage';
 import { formatDate } from '../utils/dateUtils';
+import { syncToGoogleSheets } from '../utils/sheetsSync';
+import { enqueueSync } from '../utils/syncQueue';
 
 interface HabitState {
   habits: Habit[];
@@ -29,7 +31,8 @@ type HabitAction =
   | { type: 'REORDER_HABITS'; habits: Habit[] }
   | { type: 'LOG_HABIT'; log: HabitLog }
   | { type: 'REMOVE_LOG'; habitId: string; date: string }
-  | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> };
+  | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
+  | { type: 'RESET_ALL' };
 
 const defaultSettings: AppSettings = {
   themeMode: 'dark',
@@ -112,6 +115,8 @@ function reducer(state: HabitState, action: HabitAction): HabitState {
         ...state,
         settings: { ...state.settings, ...action.settings },
       };
+    case 'RESET_ALL':
+      return { habits: [], logs: [], settings: defaultSettings, isLoaded: true };
     default:
       return state;
   }
@@ -134,6 +139,7 @@ interface HabitContextType extends HabitState {
   getLogForDay: (habitId: string, date: string) => HabitLog | undefined;
   // Settings
   updateSettings: (settings: Partial<AppSettings>) => void;
+  resetAllData: () => Promise<void>;
 }
 
 const HabitContext = createContext<HabitContextType>({} as HabitContextType);
@@ -190,6 +196,20 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         sortOrder: state.habits.length,
       };
       dispatch({ type: 'ADD_HABIT', habit });
+
+      // Fire-and-forget sync — never blocks habit creation
+      const payload = {
+        eventType: 'habit_created',
+        habitId: habit.id,
+        habitName: habit.name,
+        type: habit.type,
+        frequency: habit.frequency.type,
+        target: habit.targetCount ?? habit.targetDuration ?? null,
+        unit: habit.type === 'timed' ? 'seconds' : habit.type === 'count' ? 'count' : null,
+        status: 'active',
+        timestamp: habit.createdAt,
+      };
+      syncToGoogleSheets(payload).catch(() => enqueueSync(payload));
     },
     [state.habits.length]
   );
@@ -231,8 +251,24 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         loggedAt: new Date().toISOString(),
       };
       dispatch({ type: 'LOG_HABIT', log });
+
+      // Fire-and-forget sync
+      const habit = state.habits.find((h) => h.id === habitId);
+      const payload = {
+        eventType: 'habit_entry',
+        entryId: log.id,
+        habitId: log.habitId,
+        habitName: habit?.name ?? '',
+        date: log.date,
+        completed: log.completed,
+        count: log.value ?? null,
+        duration: null,
+        note: log.note ?? null,
+        timestamp: log.loggedAt,
+      };
+      syncToGoogleSheets(payload).catch(() => enqueueSync(payload));
     },
-    []
+    [state.habits]
   );
 
   const skipHabit = useCallback((habitId: string, date?: string) => {
@@ -246,7 +282,23 @@ export function HabitProvider({ children }: { children: ReactNode }) {
       loggedAt: new Date().toISOString(),
     };
     dispatch({ type: 'LOG_HABIT', log });
-  }, []);
+
+    // Fire-and-forget sync
+    const habit = state.habits.find((h) => h.id === habitId);
+    const payload = {
+      eventType: 'habit_entry',
+      entryId: log.id,
+      habitId: log.habitId,
+      habitName: habit?.name ?? '',
+      date: log.date,
+      completed: false,
+      count: null,
+      duration: null,
+      note: 'skipped',
+      timestamp: log.loggedAt,
+    };
+    syncToGoogleSheets(payload).catch(() => enqueueSync(payload));
+  }, [state.habits]);
 
   const uncompleteHabit = useCallback((habitId: string, date?: string) => {
     const dateStr = date ?? formatDate(new Date());
@@ -271,8 +323,24 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         loggedAt: new Date().toISOString(),
       };
       dispatch({ type: 'LOG_HABIT', log });
+
+      // Fire-and-forget sync
+      const habit = state.habits.find((h) => h.id === habitId);
+      const payload = {
+        eventType: 'habit_entry',
+        entryId: log.id,
+        habitId: log.habitId,
+        habitName: habit?.name ?? '',
+        date: log.date,
+        completed: log.completed,
+        count: log.value ?? null,
+        duration: null,
+        note: skipped ? 'skipped' : null,
+        timestamp: log.loggedAt,
+      };
+      syncToGoogleSheets(payload).catch(() => enqueueSync(payload));
     },
-    []
+    [state.habits]
   );
 
   const getLogForDay = useCallback(
@@ -283,6 +351,11 @@ export function HabitProvider({ children }: { children: ReactNode }) {
 
   const updateSettings = useCallback((settings: Partial<AppSettings>) => {
     dispatch({ type: 'UPDATE_SETTINGS', settings });
+  }, []);
+
+  const resetAllData = useCallback(async () => {
+    await StorageService.clearAllData();
+    dispatch({ type: 'RESET_ALL' });
   }, []);
 
   return (
@@ -302,6 +375,7 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         retroLog,
         getLogForDay,
         updateSettings,
+        resetAllData,
       }}
     >
       {children}

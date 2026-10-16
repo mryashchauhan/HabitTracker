@@ -45,4 +45,9 @@ export const StorageService = {
   async resetOnboarding(): Promise<void> {
     await AsyncStorage.removeItem(ONBOARDING_KEY);
   },
+
+  // Wipe everything
+  async clearAllData(): Promise<void> {
+    await AsyncStorage.multiRemove([HABITS_KEY, LOGS_KEY, SETTINGS_KEY]);
+  },
 };

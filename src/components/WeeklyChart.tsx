@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
 import { Typography } from '../theme/typography';
 
@@ -44,13 +45,21 @@ function AnimatedBar({
       style={{
         width: '100%',
         height: anim,
-        backgroundColor: completed ? color : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+        backgroundColor: completed ? 'transparent' : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
         borderRadius: 6,
-        borderTopLeftRadius: 6,
-        borderTopRightRadius: 6,
+        overflow: 'hidden',
         opacity: completed ? 1 : 0.5,
       }}
-    />
+    >
+      {completed && (
+        <LinearGradient
+          colors={[`${color}FF`, `${color}1A`]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+    </Animated.View>
   );
 }
 

@@ -5,7 +5,13 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  StyleSheet,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  GRADIENT_LIGHT, SCREEN_WASH_DARK, SCREEN_WASH_LOCATIONS, GRADIENT_LOCATIONS, BG_LIGHT, BG_DARK,
+  CARD_RADIUS,
+} from '../theme/gradients';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
@@ -29,11 +35,13 @@ import { Typography } from '../theme/typography';
 import { Spacing, Radius } from '../theme/spacing';
 import { Category, Habit } from '../types';
 import { calculateCurrentStreak } from '../utils/streakUtils';
+import { CategoryIcon } from '../components/IconMapper';
+import { GlassCard } from '../components/GlassCard';
 import { getCategoryColor } from '../utils/cardStyles';
 import { RootStackParamList, TabParamList } from '../navigation/types';
 
 type Props = CompositeScreenProps<
-  BottomTabScreenProps<TabParamList, 'Habits'>,
+  BottomTabScreenProps<TabParamList, 'Today'>,
   NativeStackScreenProps<RootStackParamList>
 >;
 
@@ -106,49 +114,38 @@ function HabitRow({
       : `${Math.round((habit.targetDuration ?? 0) / 60)} min`;
 
   return (
-    <Animated.View entering={FadeInDown.delay(index * 60).springify()}>
-      <Pressable
-        onPress={onPress}
-        onLongPress={() => {
-          setShowActions(!showActions);
-          if (Platform.OS !== 'web') {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          }
-        }}
-        style={{
-          backgroundColor: isDark ? colors.card : '#ffffff',
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: showActions
-            ? colors.accent
-            : isDark
-            ? 'rgba(255,255,255,0.06)'
-            : 'rgba(0,0,0,0.06)',
-          borderTopColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-          marginBottom: 10,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.28 : 0.06,
-          shadowRadius: 12,
-          elevation: 8,
-          overflow: 'hidden',
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
-          {/* Icon */}
-          <View
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: `${categoryColor}1a`,
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <Text style={{ fontSize: 22 }}>{habit.icon}</Text>
-          </View>
+    <Animated.View entering={FadeInDown.delay(index * 60).springify()} style={{ marginBottom: 10 }}>
+      <GlassCard innerStyle={{}}>
+        <Pressable
+          onPress={onPress}
+          onLongPress={() => {
+            setShowActions(!showActions);
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+          }}
+          style={{
+            ...(showActions ? { borderWidth: 1, borderColor: categoryColor, borderRadius: CARD_RADIUS } : {}),
+            overflow: 'hidden',
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
+            {/* Icon circle — vibrant category tint */}
+            <View
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: `${categoryColor}28`,
+                borderWidth: 1,
+                borderColor: `${categoryColor}50`,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <CategoryIcon category={habit.category} emojiFallback={habit.icon} color={categoryColor} size={22} weight="fill" />
+            </View>
 
           {/* Content */}
           <View style={{ flex: 1 }}>
@@ -182,10 +179,10 @@ function HabitRow({
           <View style={{ alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
             {streak > 0 && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                <Flame size={13} color={colors.accentGold} weight="fill" />
+                <Flame size={13} color={categoryColor} weight="fill" />
                 <Text
                   style={{
-                    color: colors.accentGold,
+                    color: categoryColor,
                     fontSize: Typography.size.small,
                     fontFamily: Typography.fontFamily.semiBold,
                   }}
@@ -194,18 +191,17 @@ function HabitRow({
                 </Text>
               </View>
             )}
-            <CaretRight size={16} color={colors.textMuted} weight="regular" />
+            <CaretRight size={16} color={isDark ? 'rgba(255,255,255,0.30)' : colors.textMuted} weight="regular" />
           </View>
         </View>
 
-        {/* Action bar (revealed on long-press) */}
         {showActions && (
           <View
             style={{
               flexDirection: 'row',
               borderTopWidth: 1,
-              borderTopColor: isDark ? colors.cardBorder : 'rgba(0,0,0,0.06)',
-              backgroundColor: isDark ? colors.surfaceElevated : '#f5f4f0',
+              borderTopColor: isDark ? `${categoryColor}40` : 'rgba(0,0,0,0.06)',
+              backgroundColor: isDark ? '#0D0D10' : '#F8F4F0',
             }}
           >
             {[
@@ -261,7 +257,8 @@ function HabitRow({
             ))}
           </View>
         )}
-      </Pressable>
+        </Pressable>
+        </GlassCard>
     </Animated.View>
   );
 }
@@ -291,17 +288,24 @@ export function HabitsScreen({ navigation }: Props) {
   const unpinnedHabits = activeHabits.filter((h) => !h.isPinned);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <View style={{ flex: 1, backgroundColor: isDark ? BG_DARK : BG_LIGHT }}>
+      <LinearGradient
+        colors={isDark ? SCREEN_WASH_DARK : GRADIENT_LIGHT}
+        locations={isDark ? SCREEN_WASH_LOCATIONS : GRADIENT_LOCATIONS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 240 }}>
         <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
-          {/* Header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
             <View>
               <Text
                 style={{
-                  color: colors.textPrimary,
-                  fontSize: Typography.size.title,
-                  fontFamily: Typography.fontFamily.display,
+                  color: isDark ? '#FFFFFF' : '#1C1C1E',
+                  fontSize: 28,
+                  fontFamily: 'PlusJakartaSans_700Bold',
                   letterSpacing: -0.5,
                 }}
               >
@@ -309,7 +313,7 @@ export function HabitsScreen({ navigation }: Props) {
               </Text>
               <Text
                 style={{
-                  color: colors.textMuted,
+                  color: isDark ? '#9F9FA1' : '#6E6E73',
                   fontSize: Typography.size.small,
                   fontFamily: Typography.fontFamily.regular,
                   marginTop: 3,
@@ -349,7 +353,6 @@ export function HabitsScreen({ navigation }: Props) {
             </Pressable>
           </View>
 
-          {/* Category filter chips */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -394,7 +397,6 @@ export function HabitsScreen({ navigation }: Props) {
             })}
           </ScrollView>
 
-          {/* Long-press hint */}
           <Text
             style={{
               color: colors.textFaint,
@@ -407,73 +409,60 @@ export function HabitsScreen({ navigation }: Props) {
           </Text>
 
           {activeHabits.length === 0 ? (
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderRadius: 20,
-                padding: 32,
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: isDark ? colors.cardBorder : 'rgba(0,0,0,0.06)',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: isDark ? 0.3 : 0.06,
-                shadowRadius: 12,
-                elevation: 8,
-              }}
-            >
-              <LottieView
-                source={require('../../assets/animations/empty-state.json')}
-                autoPlay
-                loop
-                style={{ width: 160, height: 160 }}
-              />
-              <Text
-                style={{
-                  color: colors.textPrimary,
-                  fontSize: 22,
-                  fontFamily: Typography.fontFamily.display,
-                  marginBottom: 8,
-                  textAlign: 'center',
-                }}
-              >
-                Add your first habit.
-              </Text>
-              <Text
-                style={{
-                  color: colors.textMuted,
-                  fontSize: Typography.size.body,
-                  fontFamily: Typography.fontFamily.regular,
-                  textAlign: 'center',
-                  marginBottom: 20,
-                }}
-              >
-                Small steps. Big results.
-              </Text>
-              <Pressable
-                onPress={() => navigation.navigate('AddHabit')}
-                style={({ pressed }) => ({
-                  backgroundColor: colors.accent,
-                  borderRadius: 999,
-                  paddingVertical: 14,
-                  paddingHorizontal: 28,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
+            <Animated.View entering={FadeInDown.delay(100).springify()} style={{ marginBottom: 10 }}>
+              <GlassCard innerStyle={{ padding: 24, alignItems: 'center' }}>
+                <LottieView
+                  source={require('../../assets/animations/empty-state.json')}
+                  autoPlay
+                  loop
+                  style={{ width: 160, height: 160 }}
+                />
                 <Text
                   style={{
-                    color: colors.textOnAccent,
-                    fontSize: Typography.size.body,
-                    fontFamily: Typography.fontFamily.semiBold,
+                    color: colors.textPrimary,
+                    fontSize: 22,
+                    fontFamily: Typography.fontFamily.display,
+                    marginBottom: 8,
+                    textAlign: 'center',
                   }}
                 >
-                  + Add Habit
+                  Add your first habit.
                 </Text>
-              </Pressable>
-            </View>
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontSize: Typography.size.body,
+                    fontFamily: Typography.fontFamily.regular,
+                    textAlign: 'center',
+                    marginBottom: 20,
+                  }}
+                >
+                  Small steps. Big results.
+                </Text>
+                <Pressable
+                  onPress={() => navigation.navigate('AddHabit')}
+                  style={({ pressed }) => ({
+                    backgroundColor: colors.accent,
+                    borderRadius: 999,
+                    paddingVertical: 14,
+                    paddingHorizontal: 28,
+                    opacity: pressed ? 0.85 : 1,
+                  })}
+                >
+                  <Text
+                    style={{
+                      color: colors.textOnAccent,
+                      fontSize: Typography.size.body,
+                      fontFamily: Typography.fontFamily.semiBold,
+                    }}
+                  >
+                    + Add Habit
+                  </Text>
+                </Pressable>
+              </GlassCard>
+            </Animated.View>
           ) : (
             <>
-              {/* Pinned section */}
               {pinnedHabits.length > 0 && (
                 <>
                   <SectionLabel label="Pinned" />
@@ -492,7 +481,6 @@ export function HabitsScreen({ navigation }: Props) {
                 </>
               )}
 
-              {/* Active section */}
               {unpinnedHabits.length > 0 && (
                 <>
                   {pinnedHabits.length > 0 && <SectionLabel label="Active" />}
@@ -513,7 +501,6 @@ export function HabitsScreen({ navigation }: Props) {
             </>
           )}
 
-          {/* Archived section */}
           {archivedHabits.length > 0 && (
             <View style={{ marginTop: 24 }}>
               <Pressable
@@ -547,21 +534,8 @@ export function HabitsScreen({ navigation }: Props) {
 
               {showArchived &&
                 archivedHabits.map((h) => (
-                  <View
-                    key={h.id}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 12,
-                      backgroundColor: colors.card,
-                      borderRadius: 16,
-                      padding: 16,
-                      marginBottom: 12,
-                      borderWidth: 1,
-                      borderColor: isDark ? colors.cardBorder : 'rgba(0,0,0,0.06)',
-                    }}
-                  >
-                    <Text style={{ fontSize: 20 }}>{h.icon}</Text>
+                  <GlassCard key={h.id} style={{ marginBottom: 12 }} innerStyle={{ padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <CategoryIcon category={h.category} emojiFallback={h.icon} size={20} color={colors.textSecondary} weight="regular" />
                     <Text
                       style={{
                         flex: 1,
@@ -586,7 +560,7 @@ export function HabitsScreen({ navigation }: Props) {
                         Restore
                       </Text>
                     </Pressable>
-                  </View>
+                  </GlassCard>
                 ))}
             </View>
           )}
@@ -594,7 +568,8 @@ export function HabitsScreen({ navigation }: Props) {
           {/* Bottom padding */}
           <View style={{ height: 24 }} />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }

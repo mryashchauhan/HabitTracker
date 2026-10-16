@@ -1,117 +1,126 @@
 export const DarkColors = {
-  // Backgrounds — deep warm near-black with brown undertone
-  bg: '#120d07',
-  surface: '#1c150f',
-  surfaceElevated: '#2a1f14',
-  card: '#1c150f',
-  cardBorder: 'rgba(255,200,120,0.09)',
-  topEdge: 'rgba(255,200,120,0.12)',
+  // ── Backgrounds — pure AMOLED pitch black ─────────────────────────────
+  bg: '#000000',            // TRUE AMOLED BLACK canvas
+  surface: '#000000',
+  surfaceElevated: '#1C1C1E',
+  card: '#121214',          // Neutral dark grey — matches Behance reference exactly
+  cardBorder: 'rgba(255,255,255,0.08)',
 
-  // Accents — warm amber-orange primary, deep burnt secondary
-  accent: '#f29a1f',
-  accentDim: 'rgba(242,154,31,0.15)',
-  accentGlow: 'rgba(242,154,31,0.08)',
-  accentDeep: '#c96d05',
-  accentGold: '#f5b64c',
-  accentGoldDim: 'rgba(245,182,76,0.15)',
+  // ── Brand Accents — Behance 5-color palette ───────────────────────────
+  // Atomic Tangerine (primary warm accent — activity, highlights)
+  accent: '#F6955D',
+  accentDim: 'rgba(246,149,93,0.20)',
+  accentGlow: 'rgba(246,149,93,0.10)',
 
-  // Text — warm off-white hierarchy
-  textPrimary: '#f6efe7',
-  textSecondary: '#b7a99a',
-  textMuted: '#8d7d70',
-  textFaint: '#4a3a2e',
-  textOnAccent: '#1c0e00',
+  // Razzmatazz (secondary vivid magenta — completion, streaks)
+  accentAlt: '#E31D76',
+  accentAltDim: 'rgba(227,29,118,0.18)',
 
-  // Semantic — kept functionally correct, slightly warmer tones
-  success: '#4fd1a5',
-  successDim: 'rgba(79,209,165,0.12)',
-  warning: '#f5b64c',
-  warningDim: 'rgba(245,182,76,0.12)',
-  error: '#ff6b6b',
-  errorDim: 'rgba(255,107,107,0.10)',
-  missed: '#ff6b6b',
-  skipped: '#f5b64c',
-  completed: '#4fd1a5',
+  // Legacy alias kept for any components that still use accentDeep / accentGold
+  accentDeep: '#E31D76',
+  accentGold: '#F6955D',
+  accentGoldDim: 'rgba(246,149,93,0.15)',
 
-  // Tab bar — same warm near-black family as bg, thin warm border
-  tabBar: '#120d07',
-  tabBorder: 'rgba(255,200,120,0.10)',
-  tabActive: '#f29a1f',
-  tabInactive: '#4a3a2e',
+  // ── Text — Behance hierarchy ──────────────────────────────────────────
+  textPrimary: '#FFFFFF',          // Pure white primary (H1, H2 headers)
+  textSecondary: '#E0E0E0',        // Near-white for body labels
+  textMuted: '#9F9FA1',            // Quick Silver — subtext, captions (Behance spec)
+  textFaint: 'rgba(255,255,255,0.15)',  // Disabled / ultra-faint
+  textOnAccent: '#FFFFFF',
 
-  // Category colors — preserved exactly, user-approved
-  health: '#b0f1e6',
-  fitness: '#ff7043',
-  study: '#72d7f0',
-  sleep: '#7c6aff',
-  mindfulness: '#4fd1a5',
-  custom: '#9e9e9e',
+  // ── Semantic status colors ────────────────────────────────────────────
+  success: '#00D82E',              // Vivid Malachite (electric green) — Behance spec
+  successDim: 'rgba(0,216,46,0.14)',
+  warning: '#F6955D',              // Atomic Tangerine
+  warningDim: 'rgba(246,149,93,0.14)',
+  error: '#E31D76',                // Razzmatazz
+  errorDim: 'rgba(227,29,118,0.12)',
+  missed: '#E31D76',
+  skipped: '#F6955D',
+  completed: '#00D82E',
 
-  // Extras for compatibility
-  bgSecondary: '#1c150f',
-  secondary: '#7c6aff',
-  secondaryDim: 'rgba(124,106,255,0.12)',
-  tertiary: '#ff7043',
-  tertiaryDim: 'rgba(255,112,67,0.12)',
+  // ── Tab bar ───────────────────────────────────────────────────────────
+  tabBar: '#000000',
+  tabBorder: 'rgba(255,255,255,0.10)',
+  tabActive: '#F6955D',            // Atomic Tangerine for active tab
+  tabInactive: 'rgba(255,255,255,0.38)',
+
+  // ── Category colors — Behance 5-color palette mapped to categories ────
+  health: '#00D82E',               // Vivid Malachite — green for health
+  fitness: '#F6955D',              // Atomic Tangerine — warm for fitness
+  study: '#4852F5',                // Blue Bolt — blue for study
+  sleep: '#E31D76',                // Razzmatazz — purple/pink for sleep
+  mindfulness: '#4852F5',          // Blue Bolt — calm blue for mindfulness
+  custom: '#9F9FA1',               // Quick Silver — neutral for custom
+
+  // ── Extras ────────────────────────────────────────────────────────────
+  bgSecondary: '#0A0A0C',
+  secondary: '#4852F5',            // Blue Bolt
+  secondaryDim: 'rgba(72,82,245,0.15)',
+  tertiary: '#E31D76',             // Razzmatazz
+  tertiaryDim: 'rgba(227,29,118,0.12)',
+  topEdge: 'rgba(246,149,93,0.08)',  // Faint orange top edge glow
 };
 
 export const LightColors = {
-  // Backgrounds — unchanged
-  bg: '#eeeeeb',
-  bgSecondary: '#e5e5e2',
-  surface: '#ffffff',
-  surfaceElevated: '#f5f4f0',
-  surfaceOffset: '#f5f4f0',
-  card: '#ffffff',
-  cardBorder: 'rgba(0,0,0,0.06)',
-  topEdge: 'rgba(0,0,0,0.04)',
+  // ── Backgrounds — crisp premium white ────────────────────────────────
+  bg: '#FFFFFF',
+  bgSecondary: '#F5F5F5',
+  surface: '#FFFFFF',
+  surfaceElevated: '#F8F8F8',
+  surfaceOffset: '#F5F5F5',
+  card: '#FFFFFF',
+  cardBorder: 'rgba(0,0,0,0.07)',
+  topEdge: 'rgba(248,61,17,0.10)',
 
-  // Accents — unchanged
-  accent: '#040415',
-  accentDim: 'rgba(4,4,21,0.08)',
-  accentDeep: '#040415',
-  accentGlow: 'rgba(4,4,21,0.04)',
-  accentGold: '#febc57',
-  accentGoldDim: 'rgba(254,188,87,0.12)',
+  // ── Accents — warm orange palette (light mode brand) ─────────────────
+  accent: '#F83D11',               // Spark red-orange (light mode primary)
+  accentDim: 'rgba(248,61,17,0.10)',
+  accentDeep: '#EA831D',
+  accentGlow: 'rgba(248,61,17,0.06)',
+  accentGold: '#FCC197',
+  accentGoldDim: 'rgba(252,193,151,0.18)',
   accentMint: '#b0f1e6',
+  accentAlt: '#E31D76',
+  accentAltDim: 'rgba(227,29,118,0.10)',
 
-  // Text — unchanged
-  textPrimary: '#040415',
-  textSecondary: '#4a4a5a',
-  textMuted: '#6b6b6b',
-  textFaint: '#a0a0a0',
-  textOnAccent: '#ffffff',
+  // ── Text — high-contrast dark hierarchy on white ─────────────────────
+  textPrimary: '#111111',
+  textSecondary: '#555555',
+  textMuted: '#888888',
+  textFaint: '#CCCCCC',
+  textOnAccent: '#FFFFFF',
 
-  // Semantic — unchanged
-  success: '#2db87c',
-  successDim: 'rgba(45,184,124,0.10)',
-  warning: '#e6a020',
-  warningDim: 'rgba(230,160,32,0.10)',
-  error: '#e74c3c',
-  errorDim: 'rgba(231,76,60,0.08)',
-  missed: '#e74c3c',
-  skipped: '#e6a020',
-  completed: '#2db87c',
+  // ── Semantic ──────────────────────────────────────────────────────────
+  success: '#16A34A',
+  successDim: 'rgba(22,163,74,0.10)',
+  warning: '#D97706',
+  warningDim: 'rgba(217,119,6,0.10)',
+  error: '#DC2626',
+  errorDim: 'rgba(220,38,38,0.08)',
+  missed: '#DC2626',
+  skipped: '#D97706',
+  completed: '#16A34A',
 
-  // Tab bar — unchanged
-  tabBar: '#ffffff',
-  tabBorder: 'rgba(0,0,0,0.06)',
-  tabActive: '#040415',
-  tabInactive: '#a0a0a0',
+  // ── Tab bar ───────────────────────────────────────────────────────────
+  tabBar: '#FFFFFF',
+  tabBorder: 'rgba(248,61,17,0.08)',
+  tabActive: '#F83D11',
+  tabInactive: 'rgba(0,0,0,0.28)',
 
-  // Category colors — unchanged
-  health: '#b0f1e6',
-  fitness: '#ff7043',
-  study: '#72d7f0',
-  sleep: '#7c6aff',
-  mindfulness: '#4fd1a5',
+  // ── Category colors ───────────────────────────────────────────────────
+  health: '#00B84D',               // Softer green for light mode
+  fitness: '#F83D11',              // Spark orange-red
+  study: '#4852F5',                // Blue Bolt
+  sleep: '#A855F7',                // Purple
+  mindfulness: '#0EA5E9',          // Sky blue
   custom: '#9e9e9e',
 
-  // Extras for compatibility — unchanged
-  secondary: '#7c6aff',
-  secondaryDim: 'rgba(124,106,255,0.10)',
-  tertiary: '#ff7043',
-  tertiaryDim: 'rgba(255,112,67,0.10)',
+  // ── Extras ────────────────────────────────────────────────────────────
+  secondary: '#4852F5',
+  secondaryDim: 'rgba(72,82,245,0.10)',
+  tertiary: '#E31D76',
+  tertiaryDim: 'rgba(227,29,118,0.10)',
 };
 
 export type ColorScheme = typeof DarkColors;
