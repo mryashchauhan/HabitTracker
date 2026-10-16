@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -149,7 +150,7 @@ export function HabitDetailScreen({ route, navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, ...CONTENT_COLUMN }} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 48 }}>
 
         {/* TOP BAR */}

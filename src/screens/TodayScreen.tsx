@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -259,7 +260,7 @@ export function TodayScreen({ navigation }: Props) {
         </Modal>
       )}
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent', ...CONTENT_COLUMN }} edges={['top']}>
 
         {/* ══════════════════════════════════════════════════════════════
             HERO — sits on the vivid orange top portion of the gradient
@@ -366,7 +367,7 @@ export function TodayScreen({ navigation }: Props) {
               contentContainerStyle={{
                 paddingTop: 8,
                 paddingHorizontal: 12,
-                paddingBottom: FLOATING_NAV_HEIGHT + 140,
+                paddingBottom: FLOATING_NAV_HEIGHT + 40,
               }}
               bounces={Platform.OS === 'ios'}
               overScrollMode="never"

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -296,7 +297,7 @@ export function HabitsScreen({ navigation }: Props) {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent', ...CONTENT_COLUMN }} edges={['top']}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 240 }}>
         <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>

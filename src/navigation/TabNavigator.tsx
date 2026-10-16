@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform, View, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -60,14 +61,17 @@ function CircularTabIcon({ focused, IconComponent }: { focused: boolean; IconCom
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { isDark } = useTheme();
   const { width: screenW } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   const PILL_WIDTH = Math.min(320, Math.round(screenW * 0.78));
   const sideMargin = Math.round((screenW - PILL_WIDTH) / 2);
+  // Sit above the system gesture bar / home indicator instead of a fixed offset
+  const bottomOffset = Math.max(PILL_BOTTOM - 12, insets.bottom + 12);
 
   return (
     <View style={{
       position: 'absolute',
-      bottom: PILL_BOTTOM,
+      bottom: bottomOffset,
       left: sideMargin,
       width: PILL_WIDTH,
       height: PILL_HEIGHT,

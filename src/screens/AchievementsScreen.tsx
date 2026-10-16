@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { CONTENT_COLUMN, MAX_CONTENT_WIDTH } from '../constants/layout';
 import {
   View,
   Text,
@@ -24,7 +25,8 @@ import { getCategoryColor } from '../utils/cardStyles';
 
 const NAV_H = FLOATING_NAV_HEIGHT + 24;
 
-const { width: SCREEN_W } = Dimensions.get('window');
+// Cards size to the capped content column, not the full (possibly tablet-wide) window
+const SCREEN_W = Math.min(Dimensions.get('window').width, MAX_CONTENT_WIDTH);
 const CARD_GAP = 10;
 const CARD_PADDING = 16;
 const CARD_SIZE = Math.floor((SCREEN_W - CARD_PADDING * 2 - CARD_GAP) / 2); // 2 columns with gap
@@ -167,10 +169,10 @@ export function AchievementsScreen() {
         style={StyleSheet.absoluteFill}
       />
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent', ...CONTENT_COLUMN }} edges={['top']}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: FLOATING_NAV_HEIGHT + 140 }}
+          contentContainerStyle={{ paddingBottom: FLOATING_NAV_HEIGHT + 40 }}
         >
           {/* Header */}
           <View style={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 20 }}>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -147,7 +148,7 @@ export function CalendarScreen({ route, navigation }: Props) {
     month === new Date().getMonth() && year === new Date().getFullYear();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, ...CONTENT_COLUMN }} edges={['top']}>
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -414,12 +415,12 @@ export function SettingsScreen({}: Props) {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent', ...CONTENT_COLUMN }} edges={['top']}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 20,
-            paddingBottom: FLOATING_NAV_HEIGHT + 140,
+            paddingBottom: FLOATING_NAV_HEIGHT + 40,
           }}
         >
           {/* Header */}

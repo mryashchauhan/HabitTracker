@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import {
   View,
   Text,
@@ -149,7 +150,7 @@ export function AddHabitScreen({ navigation }: Props) {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, ...CONTENT_COLUMN }} edges={['top', 'bottom']}>
       {/* Header */}
       <View
         style={{

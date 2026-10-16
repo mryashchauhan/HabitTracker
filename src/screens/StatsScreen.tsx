@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import { CONTENT_COLUMN } from '../constants/layout';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -31,7 +32,7 @@ type Props = CompositeScreenProps<
 >;
 
 const WEEK_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const NAV_CLEARANCE = FLOATING_NAV_HEIGHT + 140;
+const NAV_CLEARANCE = FLOATING_NAV_HEIGHT + 40;
 
 function AnimatedStat({ value, suffix = '' }: { value: number; suffix?: string }) {
   const [display, setDisplay] = React.useState(0);
@@ -106,7 +107,7 @@ export function StatsScreen({ navigation }: Props) {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent', ...CONTENT_COLUMN }} edges={['top']}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: NAV_CLEARANCE }}
