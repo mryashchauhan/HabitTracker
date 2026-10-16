@@ -21,18 +21,30 @@ export async function syncToGoogleSheets(payload: object): Promise<void> {
     SHEETS_SYNC_ENABLED_KEY,
   ]);
 
-  const webhookUrl = urlRaw[1] ?? '';
+  const webhookUrl = (urlRaw[1] ?? '').trim();
   const syncEnabled = enabledRaw[1] === 'true';
 
-  if (!syncEnabled || !webhookUrl.trim()) return;
+  // Hardened validation: Must be enabled and must be a secure Google Apps Script webhook
+  if (!syncEnabled || !webhookUrl.startsWith('https://script.google.com/macros/s/')) {
+    return;
+  }
 
-  const response = await fetch(webhookUrl.trim(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  // 10-second fetch timeout to prevent hanging network calls
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-  if (!response.ok) {
-    throw new Error(`Sheets sync failed: HTTP ${response.status}`);
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Sheets sync failed: HTTP ${response.status}`);
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

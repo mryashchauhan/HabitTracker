@@ -48,6 +48,14 @@ export const StorageService = {
 
   // Wipe everything
   async clearAllData(): Promise<void> {
-    await AsyncStorage.multiRemove([HABITS_KEY, LOGS_KEY, SETTINGS_KEY]);
+    await AsyncStorage.multiRemove([
+      HABITS_KEY,
+      LOGS_KEY,
+      SETTINGS_KEY,
+      'SYNC_QUEUE',
+      'SHEETS_WEBHOOK_URL',
+      'SHEETS_SYNC_ENABLED',
+      'LAST_SYNC_TIME',
+    ]);
   },
 };

@@ -3,15 +3,19 @@ import { syncToGoogleSheets } from './sheetsSync';
 
 const SYNC_QUEUE_KEY = 'SYNC_QUEUE';
 
+const MAX_QUEUE_SIZE = 100;
+
 /**
  * Append a failed payload to the persistent retry queue.
+ * Capped to MAX_QUEUE_SIZE to prevent unbounded storage growth.
  */
 export async function enqueueSync(payload: object): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(SYNC_QUEUE_KEY);
     const queue: object[] = raw ? JSON.parse(raw) : [];
     queue.push(payload);
-    await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+    const trimmed = queue.length > MAX_QUEUE_SIZE ? queue.slice(-MAX_QUEUE_SIZE) : queue;
+    await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(trimmed));
   } catch {
     // Storage failure — drop silently, never block the caller
   }

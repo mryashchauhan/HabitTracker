@@ -177,7 +177,13 @@ export function SettingsScreen({}: Props) {
                 {
                   text: 'Yes, Delete All',
                   style: 'destructive',
-                  onPress: () => resetAllData(),
+                  onPress: () => {
+                    resetAllData();
+                    setSyncEnabled(false);
+                    setWebhookUrl('');
+                    setLastSyncTime(null);
+                    setPendingCount(0);
+                  },
                 },
               ]
             );
@@ -215,7 +221,14 @@ export function SettingsScreen({}: Props) {
   };
 
   const handleWebhookBlur = async () => {
-    await AsyncStorage.setItem(SHEETS_WEBHOOK_URL_KEY, webhookUrl.trim());
+    const trimmed = webhookUrl.trim();
+    if (trimmed && !trimmed.startsWith('https://script.google.com/macros/s/')) {
+      Alert.alert(
+        'Invalid Webhook URL',
+        'Google Sheets webhooks must begin with https://script.google.com/macros/s/'
+      );
+    }
+    await AsyncStorage.setItem(SHEETS_WEBHOOK_URL_KEY, trimmed);
   };
 
   const handleSyncNow = async () => {
