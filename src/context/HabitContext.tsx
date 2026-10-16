@@ -32,6 +32,13 @@ type HabitAction =
   | { type: 'LOG_HABIT'; log: HabitLog }
   | { type: 'REMOVE_LOG'; habitId: string; date: string }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
+  | {
+      type: 'RESTORE_DATA';
+      habits: Habit[];
+      logs: HabitLog[];
+      settings?: Partial<AppSettings>;
+      mode: 'merge' | 'replace';
+    }
   | { type: 'RESET_ALL' };
 
 const defaultSettings: AppSettings = {
@@ -53,6 +60,35 @@ function reducer(state: HabitState, action: HabitAction): HabitState {
         settings: action.settings,
         isLoaded: true,
       };
+    case 'RESTORE_DATA': {
+      if (action.mode === 'replace') {
+        return {
+          ...state,
+          habits: action.habits,
+          logs: action.logs,
+          settings: action.settings
+            ? { ...state.settings, ...action.settings }
+            : state.settings,
+        };
+      }
+      // Merge mode: combine habits by id and logs by (habitId + date)
+      const habitMap = new Map<string, Habit>();
+      state.habits.forEach((h) => habitMap.set(h.id, h));
+      action.habits.forEach((h) => habitMap.set(h.id, h));
+
+      const logMap = new Map<string, HabitLog>();
+      state.logs.forEach((l) => logMap.set(`${l.habitId}_${l.date}`, l));
+      action.logs.forEach((l) => logMap.set(`${l.habitId}_${l.date}`, l));
+
+      return {
+        ...state,
+        habits: Array.from(habitMap.values()),
+        logs: Array.from(logMap.values()),
+        settings: action.settings
+          ? { ...state.settings, ...action.settings }
+          : state.settings,
+      };
+    }
     case 'ADD_HABIT':
       return { ...state, habits: [...state.habits, action.habit] };
     case 'UPDATE_HABIT':
@@ -137,8 +173,12 @@ interface HabitContextType extends HabitState {
   uncompleteHabit: (habitId: string, date?: string) => void;
   retroLog: (habitId: string, date: string, completed: boolean, skipped?: boolean, value?: number) => void;
   getLogForDay: (habitId: string, date: string) => HabitLog | undefined;
-  // Settings
+  // Settings & Restore
   updateSettings: (settings: Partial<AppSettings>) => void;
+  restoreData: (
+    data: { habits: Habit[]; logs: HabitLog[]; settings?: Partial<AppSettings> },
+    mode?: 'merge' | 'replace'
+  ) => void;
   resetAllData: () => Promise<void>;
 }
 
@@ -353,6 +393,22 @@ export function HabitProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'UPDATE_SETTINGS', settings });
   }, []);
 
+  const restoreData = useCallback(
+    (
+      data: { habits: Habit[]; logs: HabitLog[]; settings?: Partial<AppSettings> },
+      mode: 'merge' | 'replace' = 'merge'
+    ) => {
+      dispatch({
+        type: 'RESTORE_DATA',
+        habits: data.habits,
+        logs: data.logs,
+        settings: data.settings,
+        mode,
+      });
+    },
+    []
+  );
+
   const resetAllData = useCallback(async () => {
     await StorageService.clearAllData();
     dispatch({ type: 'RESET_ALL' });
@@ -375,6 +431,7 @@ export function HabitProvider({ children }: { children: ReactNode }) {
         retroLog,
         getLogForDay,
         updateSettings,
+        restoreData,
         resetAllData,
       }}
     >
